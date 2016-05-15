@@ -47,6 +47,7 @@ public class BypassAgent implements ClassFileTransformer {
                 CtMethod method = ctClass.getMethod("isBlockedServerHostName", "(Ljava/lang/String;)Z");
                 method.setBody("{ return false; }");
 
+                System.out.println("[MojangBlacklistBypass] Successfully retransformed server blacklist!");
                 return ctClass.toBytecode();
             }
         } catch (Exception e) {

@@ -8,3 +8,7 @@ Then, inside your Minecraft launcher, edit your profile and edit the JVM argumen
 `-javaargument:/path/to/MojangServerBlacklist.jar`
 
 **Make sure you change the path to wherever you are storing the jar!** I recommend keeping it in your .minecraft folder.
+
+### Please note:
+If your path has spaces in it, you will need to wrap it in double-quotes, like so:  
+`-javaargument:"/path with spaces/to/MojangServerBlacklist.jar"`

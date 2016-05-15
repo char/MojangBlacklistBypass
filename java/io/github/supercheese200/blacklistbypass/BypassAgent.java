@@ -20,12 +20,6 @@ public class BypassAgent implements ClassFileTransformer {
         instrumentation.addTransformer(new BypassAgent());
     }
 
-
-    public static void agentmain(String args, Instrumentation instrumentation) {
-        throw new RuntimeException("Post-startup agent not supported!");
-    }
-
-
     /**
      * Transformation method - implemented by a ClassFileTransformer in order to change classes' bytecode as they are loaded.
      * @param classLoader The ClassLoader of the class being transformed.
@@ -39,16 +33,19 @@ public class BypassAgent implements ClassFileTransformer {
     @Override
     public byte[] transform(ClassLoader classLoader, String className, Class<?> classBeingTransformed, ProtectionDomain protectionDomain, byte[] bytes) throws IllegalClassFormatException {
         try {
-            if (classBeingTransformed.getName().equals("io.netty.bootstrap.Bootstrap")) {
-                ClassPool pool = ClassPool.getDefault();
-                pool.appendClassPath(new ByteArrayClassPath(classBeingTransformed.getName(), bytes));
+            if (className != null) {
+                className = className.replace("/", ".");
+                if (className.equals("io.netty.bootstrap.Bootstrap")) {
+                    ClassPool pool = ClassPool.getDefault();
+                    pool.appendClassPath(new ByteArrayClassPath(className, bytes));
 
-                CtClass ctClass = pool.get(classBeingTransformed.getName());
-                CtMethod method = ctClass.getMethod("isBlockedServerHostName", "(Ljava/lang/String;)Z");
-                method.setBody("{ return false; }");
+                    CtClass ctClass = pool.get(className);
+                    CtMethod method = ctClass.getMethod("isBlockedServerHostName", "(Ljava/lang/String;)Z");
+                    method.setBody("{ return false; }");
 
-                System.out.println("[MojangBlacklistBypass] Successfully retransformed server blacklist!");
-                return ctClass.toBytecode();
+                    System.out.println("[MojangBlacklistBypass] Successfully retransformed server blacklist!");
+                    return ctClass.toBytecode();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

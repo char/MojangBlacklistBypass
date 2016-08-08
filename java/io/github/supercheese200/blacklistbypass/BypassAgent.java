@@ -45,6 +45,19 @@ public class BypassAgent implements ClassFileTransformer {
 
                     System.out.println("[MojangBlacklistBypass] Successfully retransformed server blacklist!");
                     return ctClass.toBytecode();
+                } else if ( className.equals("net.minecraft.client.ClientBrandRetriever") ) {
+                    ClassPool pool = ClassPool.getDefault();
+        			pool.appendClassPath(new ByteArrayClassPath(className, bytes));
+        
+        			CtClass ctClass = pool.get(className);
+        			CtMethod getClientModName = ctClass.getMethod("getClientModName", "()Ljava/lang/String;");
+        			CtMethod getClientModNameZ = CtNewMethod.copy(getClientModName, ctClass, null);
+        			getClientModNameZ.setName("getClientModNameZ");
+        			ctClass.addMethod(getClientModNameZ);
+        			getClientModName.setBody("{ return getClientModNameZ() + \",squidhq\"; }");
+        
+        			System.out.println("SquidHQ: Branded");
+        			return ctClass.toBytecode();
                 }
             }
         } catch (Exception e) {

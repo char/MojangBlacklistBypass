@@ -35,7 +35,7 @@ public class BypassAgent implements ClassFileTransformer {
         try {
             if (className != null) {
                 className = className.replace("/", ".");
-                if (className.equals("io.netty.bootstrap.Bootstrap")) {
+                if (className.equals("io.netty.bootstrap.Bootstrap") || className.equals("com.mojang.patchy.BlockedServers")) {
                     ClassPool pool = ClassPool.getDefault();
                     pool.appendClassPath(new ByteArrayClassPath(className, bytes));
 
